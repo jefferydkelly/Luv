@@ -11,12 +11,15 @@ function Bullet.new(pos)
 
   self.pos = pos - Vector2.new(self.width / 2, 0);
   self.moveSpeed = 500;
-
+  self.body = love.physics.newBody(GetGameManager():GetWorld(), self.pos.x, self.pos.y, "dynamic")
+  self.shape = love.physics.newRectangleShape(self.width, self.height)
+  self.fixture = love.physics.newFixture(self.body, self.shape)
   return self;
 end
 
 function Bullet.Update (self, dt)
   self.pos.y = self.pos.y - self.moveSpeed * dt;
+  self.body:setPosition(self.pos.x, self.pos.y)
 end
 
 function Bullet.Draw(self)

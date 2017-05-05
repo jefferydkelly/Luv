@@ -6,7 +6,11 @@ Vector2 = {
     return Vector2.new(lhs.x - rhs.x, lhs.y - rhs.y)
   end,
   __mul = function(lhs, rhs)
-    return Vector2.new(lhs.x * rhs, lhs.y * rhs)
+    if (type(rhs) == "number") then
+      return Vector2.new(lhs.x * rhs, lhs.y * rhs)
+    else
+      return lhs.x * rhs.x + lhs.y * rhs.y
+    end
   end,
   __div = function(lhs, rhs)
     return Vector2.new(lhs.x / rhs, lhs.y / rhs)
@@ -48,10 +52,6 @@ function Vector2.Get_MagnitudeSqr(self)
   return self.x * self.x + self.y * self.y
 end
 
-function Vector2.Dot(self, vec)
-  return self.x * vec.x + self.y * vec.y;
-end
-
 function Vector2.Rotate(self, ang)
   local cos = math.cos(ang)
   local sin = math.sin(ang)
@@ -65,4 +65,8 @@ function Vector2.Rotated(self, ang)
   local cos = math.cos(ang)
   local sin = math.sin(ang)
   return Vector2.new(self.x * cos - self.y * sin, self.x * sin + self.y * cos)
+end
+
+function Vector2.Get_Angle(self)
+  return math.atan2(self.y, self.x)
 end
