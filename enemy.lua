@@ -1,27 +1,37 @@
 require('vector')
 require('jTimer')
 require('bullet')
+require('collisionManager')
 
 Enemy = {}
 Enemy.__index = Enemy;
-local playerSprite = love.graphics.newImage('Sprites/Enemy.png')
-function Enemy.new(world)
+local enemySprite = love.graphics.newImage('Sprites/Enemy.png')
+
+function Enemy.new()
   local self = setmetatable({}, Enemy)
   self.pos = Vector2.new(love.graphics.getWidth() / 2, 70)
-  self.sprite = playerSprite
-  self.width, self.height = playerSprite:getDimensions()
+  self.sprite = enemySprite
+  self.width, self.height = enemySprite:getDimensions()
   self.canFire = true;
   self.refreshTimer = JTimer.new(function () self.canFire = true end, 1)
-  self.body = love.physics.newBody(world, self.pos.x, self.pos.y, "dynamic")
-  self.shape = love.physics.newRectangleShape(self.width, self.height)
-  self.fixture = love.physics.newFixture(self.body, self.shape)
+  self.body = JCollider.newRectangleShape(self.width, self.height, self)
+  self.body.gameObject = self;
+  self.tag = "Enemy"
+  AddGameObject(self)
   return self;
 end
 
 function Enemy.Draw(self)
   love.graphics.draw(self.sprite, self.pos.x, self.pos.y)
+  self.body:Draw({0, 0, 255})
 end
 
 function Enemy.Update (self, dt)
-  self.body:setPosition(self.pos.x, self.pos.y)
+
+end
+
+function Enemy.HandleCollision(self, other)
+  if (other.tag == "Bullet") then
+    RemoveGameObject(self)
+  end
 end

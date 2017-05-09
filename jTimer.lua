@@ -1,9 +1,11 @@
+require('jTable')
 JTimer = {};
 JTimer.__index = JTimer;
 
-function JTimer.new(del, time)
+function JTimer.new(time)
   local self = setmetatable({}, JTimer)
-  self.del = del;
+  self.del = nil;
+  self.tar = nil;
   self.time = time;
   self.runTime = 0;
   return self
@@ -12,7 +14,7 @@ end
 function JTimer.Update(self, dt)
   self.runTime = self.runTime + dt;
   if self.runTime >= self.time then
-    self.del();
+    self.del(self.tar)
     self.runTime = 0;
     return true;
   end
@@ -25,16 +27,6 @@ function JTimer.Start(self)
 end
 
 TimerManager = {
-  timers = {
-    indexOf = function (self, val)
-      for i = 1, #self do
-        if self[i] == val then
-          return i;
-        end
-      end
-      return 0;
-    end
-  }
 }
 local instance = nil;
 TimerManager.__index = TimerManager;
@@ -42,31 +34,36 @@ TimerManager.__index = TimerManager;
 function GetTimerManager()
   if instance == nil then
     instance = setmetatable({}, TimerManager)
+    instance.timers = {};
+    instance.toAdd = {};
+    instance.toRemove = {};
   end
   return instance;
 end
 
 function TimerManager.Add (self, jt)
-  table.insert(self.timers, jt)
+  Add(instance.toAdd, jt)
 end
 
 function TimerManager.Remove(self, jt)
-  table.remove(jt)
+  Add(instance.toRemove, jt)
 end
 
 function TimerManager.Update(self, dt)
-  local toRemove = {}
+
+  for i = 1, #self.toAdd do
+    Add(instance.timers, self.toAdd[i])
+  end
+  self.toAdd = {}
   for i = 1, #self.timers do
     if self.timers[i]:Update(dt) then
-      table.insert(toRemove, self.timers[i])
+      Add(self.toRemove, self.timers[i])
     end
   end
 
-  for i = 1, #toRemove do
-    local ind = self.timers:indexOf(toRemove[i]);
-    if ind > 0 then
-      table.remove(self.timers, ind)
-    end
+  for i = 1, #self.toRemove do
+    Remove(self.timers, self.toRemove[i])
   end
+  self.toRemove = {}
 end
 

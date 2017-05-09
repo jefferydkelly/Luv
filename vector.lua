@@ -70,3 +70,7 @@ end
 function Vector2.Get_Angle(self)
   return math.atan2(self.y, self.x)
 end
+
+function Vector2.Get_Info(self)
+  return "X: " .. self.x .. " Y: " .. self.y;
+end
