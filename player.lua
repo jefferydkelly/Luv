@@ -3,6 +3,8 @@ require('jTable')
 require('jTimer')
 require('bullet')
 require('collisionManager')
+require('CryWeapon')
+require('AngerWeapon')
 Player = {}
 Player.__index = Player;
 local playerSprite = love.graphics.newImage('Sprites/Player.png')
@@ -18,6 +20,8 @@ function Player.new()
   self.body = JCollider.newRectangleShape(self.width, self.height, self)
   self.body.gameObject = self;
   self.tag = "Player"
+  self.weapon = AngerWeapon.new()
+  self.rotation = 0;
   AddGameObject(self)
   return self;
 end
@@ -26,10 +30,19 @@ function Player.Reset(self)
   self.canFire = true
 end
 function Player.Draw(self)
-  love.graphics.draw(self.sprite, self.pos.x, self.pos.y)
-  self.body:Draw({255, 0, 0})
+  local drawPos = self:GetDrawPos()
+  love.graphics.draw(self.sprite, drawPos.x, drawPos.y, self.rotation)
 end
 
+function Player.GetDrawPos(self)
+  local dims = Vector2.new(self.width, self.height):Rotated(self.rotation) / 2
+  return Vector2.new(self.pos.x - dims.x, self.pos.y - dims.y)
+end
+
+function Player.SetForward(self, fwd)
+  self.fwd = fwd;
+  self.rotation = self.fwd:Get_Angle()
+end
 function Player.Update (self, dt)
   if self.canFire and love.mouse.isDown(1) then
     self:Fire()
@@ -45,9 +58,7 @@ function Player.Update (self, dt)
 end
 
 function Player.Fire(self)
-  local bullPos = self.pos + Vector2.new(self.width / 2, -self.height * 0.8)
-
-  Bullet.new(bullPos)
+  self.weapon:Fire(self)
   self.canFire = false;
   self.refreshTimer:Start()
 end

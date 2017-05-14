@@ -17,13 +17,23 @@ function Enemy.new()
   self.body = JCollider.newRectangleShape(self.width, self.height, self)
   self.body.gameObject = self;
   self.tag = "Enemy"
+  self.rotation = 0;
+  self.fwd = Vector2.new(0, 1)
   AddGameObject(self)
   return self;
 end
 
+function Enemy.GetDrawPos(self)
+  return Vector2.new(self.pos.x - (self.width * math.cos(self.rotation)) / 2, self.pos.y - (self.height * math.sin(self.rotation)) / 2)
+end
+
+function Enemy.SetForward(self, fwd)
+  self.fwd = fwd;
+  self.rotation = self.fwd:Get_Angle()
+end
 function Enemy.Draw(self)
-  love.graphics.draw(self.sprite, self.pos.x, self.pos.y)
-  self.body:Draw({0, 0, 255})
+  local drawPos = self:GetDrawPos()
+  love.graphics.draw(self.sprite, drawPos.x, drawPos.y, self.rotation)
 end
 
 function Enemy.Update (self, dt)

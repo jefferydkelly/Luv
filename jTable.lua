@@ -1,19 +1,32 @@
-function Add(tab, val)
-  table.insert(tab, val)
+JTable = {}
+JTable.__index = JTable;
+function JTable.new()
+  local self = setmetatable({}, JTable)
+  return self;
 end
 
-function Remove(tab, val)
-  local ind = IndexOf(tab, val)
+function JTable.Add(self, el)
+  table.insert(self, el)
+end
+
+function JTable.Remove (self, el)
+  local ind = self:IndexOf(el)
   if (ind > 0) then
-    table.remove(tab, ind)
+    table.remove(self, ind)
   end
 end
 
-function IndexOf(tab, val)
-  for i = 1, #tab do
-    if tab[i] == val then
+function JTable.IndexOf(self, el)
+  for i = 1, #self do
+    if self[i] == el then
       return i;
     end
   end
   return 0;
+end
+
+function JTable.Clear(self)
+  for i = 1, #self do
+    self[i] = nil
+  end
 end

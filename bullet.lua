@@ -8,14 +8,24 @@ Bullet = {
     RemoveGameObject(self)
   end,
   Update = function(self, dt)
-    self.pos.y = self.pos.y - self.moveSpeed * dt;
+    self.pos = self.pos + (self.fwd * self.moveSpeed * dt);
+  end,
+  GetDrawPos = function(self)
+    local dims = Vector2.new(self.width, self.height):Rotated(self.rotation) / 2
+    return Vector2.new(self.pos.x - dims.x, self.pos.y - dims.y)
   end,
   Draw = function(self)
-    love.graphics.draw(self.sprite, self.pos.x, self.pos.y)
-    self.body:Draw({0, 255, 0})
+    local drawPos = self:GetDrawPos()
+    love.graphics.draw(self.sprite, drawPos.x, drawPos.y, self.rotation)
   end,
   HandleCollision = function(self, other)
-    self:Die();
+    if not other.tag == "Bullet" then
+      self:Die();
+    end
+  end,
+  SetForward = function(self, fwd)
+    self.fwd = fwd;
+    self.rotation = fwd:Get_Angle()
   end
 }
 Bullet.__index = Bullet;
@@ -26,8 +36,10 @@ function Bullet.new(pos)
   self.sprite = bulletSprite;
   self.width, self.height = bulletSprite:getDimensions()
 
-  self.pos = pos - Vector2.new(self.width / 2, 0);
-  self.moveSpeed = 500;
+  self.pos = pos
+  self.fwd = Vector2.new(0.0, -1.0)
+  self.rotation = self.fwd:Get_Angle();
+  self.moveSpeed = 500.0;
   self.body = JCollider.newRectangleShape(self.width, self.height, self)
   self.body.gameObject = self;
   self.destroyTimer = JTimer.new(2)

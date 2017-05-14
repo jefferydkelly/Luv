@@ -34,36 +34,38 @@ TimerManager.__index = TimerManager;
 function GetTimerManager()
   if instance == nil then
     instance = setmetatable({}, TimerManager)
-    instance.timers = {};
-    instance.toAdd = {};
-    instance.toRemove = {};
+    instance.timers = JTable.new();
+    instance.toAdd = JTable.new();
+    instance.toRemove = JTable.new();
   end
   return instance;
 end
 
 function TimerManager.Add (self, jt)
-  Add(instance.toAdd, jt)
+  self.toAdd:Add(jt)
 end
 
 function TimerManager.Remove(self, jt)
-  Add(instance.toRemove, jt)
+  self.toRemove:Add(jt)
 end
 
 function TimerManager.Update(self, dt)
 
   for i = 1, #self.toAdd do
-    Add(instance.timers, self.toAdd[i])
+    self.timers:Add(self.toAdd[i])
+    self.toAdd:Remove(self.toAdd[i])
   end
-  self.toAdd = {}
+  
   for i = 1, #self.timers do
     if self.timers[i]:Update(dt) then
-      Add(self.toRemove, self.timers[i])
+      self.toRemove:Add(self.timers[i])
     end
   end
 
   for i = 1, #self.toRemove do
-    Remove(self.timers, self.toRemove[i])
+    self.timers:Remove(self.toRemove[i])
+    self.toRemove:Remove(self.toRemove[i])
   end
-  self.toRemove = {}
+
 end
 

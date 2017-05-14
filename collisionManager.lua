@@ -6,9 +6,9 @@ local cm = nil;
 function GetCollisionManager()
   if cm == nil then
     cm = setmetatable({}, CollisionManager)
-    cm.bodies = {};
-    cm.toAdd = {};
-    cm.toRemove = {};
+    cm.bodies = JTable.new();
+    cm.toAdd = JTable.new();
+    cm.toRemove = JTable.new();
   end
   return cm
 end
@@ -17,9 +17,9 @@ function CollisionManager.Update(self)
   local bodyA, bodyB = nil, nil;
 
   for i = 1, #self.toAdd do
-    Add(self.bodies, self.toAdd[i])
+    self.bodies:Add(self.toAdd[i])
   end
-  self.toAdd = {}
+  self.toAdd:Clear()
   for i = 1, #self.bodies do
     bodyA = self.bodies[i];
     for j = 1, i - 1 do
@@ -32,17 +32,17 @@ function CollisionManager.Update(self)
   end
 
   for i = 1, #self.toRemove do
-    Remove(self.bodies, self.toRemove[i])
+    self.bodies:Remove(self.toRemove[i])
   end
-  self.toRemove = {}
+  self.toRemove:Clear()
 end
 
 function CollisionManager.AddBody(self, body)
-  Add(self.toAdd, body)
+  self.toAdd:Add(body)
 end
 
 function CollisionManager.RemoveBody(self, body)
-  Add(self.toRemove, body)
+  self.toRemove:Add(body)
 end
 
 JCollider = {}
@@ -64,20 +64,20 @@ function JCollider.GetWorldPoints(self)
   local worldPoints = {};
   local pos = self.gameObject.pos + Vector2.new(self.gameObject.width, self.gameObject.height) / 2 or Vector2.new(0, 0)
   for i = 1, #self.points do
-    table.insert(worldPoints, self.points[i] + pos)
+    table.insert(worldPoints, self.points[i]:Rotated(self.gameObject.rotation) + pos)
   end
 
   return worldPoints;
 end
 
 function JCollider.Draw(self, color)
-  local verts = {};
+  local verts = JTable.new()
   love.graphics.setColor(color or {255, 255, 255})
-  local pos = self.gameObject.pos + Vector2.new(self.gameObject.width, self.gameObject.height) / 2 or Vector2.new(0, 0)
+  local pos = self.gameObject.pos or Vector2.new(0, 0)
   for i = 1, #self.points do
-    local pPos = self.points[i]
-    table.insert(verts, pos.x + pPos.x)
-    table.insert(verts, pos.y + pPos.y)
+    local pPos = pos - self.points[i]:Rotated(self.gameObject.rotation)
+    verts:Add(pPos.x)
+    verts:Add(pPos.y)
   end
   love.graphics.polygon("fill", verts)
   love.graphics.setColor(255, 255, 255)
