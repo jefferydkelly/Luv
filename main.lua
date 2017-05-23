@@ -1,9 +1,10 @@
 require('jTable')
 require('jTimer')
 require('collisionManager')
-require('GameObject')
-require('Player')
-require('Enemy')
+require('gameObject')
+require('player')
+require('enemy')
+require('Obstacle')
 
 
 
@@ -37,8 +38,11 @@ function Update(dt)
   end
 end
 
+function GetPlayer()
+  return player;
+end
+
 function Draw(self)
-  love.graphics.print(#gameObjects, 100, 100)
   for i = 1, #gameObjects do
     gameObjects[i]:Draw()
   end
@@ -47,6 +51,13 @@ end
 function love.load()
   gameObjects = JTable.new();
   player = Player.new()
+  local e1 = Enemy.new()
+  e1.pos.x = love.graphics.getWidth() / 5;
+  e1.moveLeft = true;
+  local e2 = Enemy.new()
+  e2.pos.x = love.graphics.getWidth() * 4 / 5;
+  Obstacle.new(Vector2.new(love.graphics.getWidth(), love.graphics.getHeight()) / 2)
+
 end
 function love.update(dt)
   GetCollisionManager():Update();

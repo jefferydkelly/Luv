@@ -26,6 +26,11 @@ function JTimer.Start(self)
   GetTimerManager():Add(self)
 end
 
+function JTimer.Stop(self)
+  GetTimerManager():Remove(self)
+  self.runTime = 0;
+end
+
 TimerManager = {
 }
 local instance = nil;
@@ -55,7 +60,7 @@ function TimerManager.Update(self, dt)
     self.timers:Add(self.toAdd[i])
     self.toAdd:Remove(self.toAdd[i])
   end
-  
+
   for i = 1, #self.timers do
     if self.timers[i]:Update(dt) then
       self.toRemove:Add(self.timers[i])

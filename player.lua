@@ -6,7 +6,7 @@ require('collisionManager')
 require('CryWeapon')
 require('AngerWeapon')
 Player = {}
-Player.__index = Player;
+Player.__index = GameObject;
 local playerSprite = love.graphics.newImage('Sprites/Player.png')
 function Player.new()
   local self = setmetatable({}, Player)
@@ -17,54 +17,57 @@ function Player.new()
   self.refreshTimer = JTimer.new(1)
   self.refreshTimer.tar = self;
   self.refreshTimer.del = self.Reset;
+  self.respawnTimer = JTimer.new(2)
+  self.respawnTimer.del = self.Respawn;
+  self.respawnTimer.tar = self
   self.body = JCollider.newRectangleShape(self.width, self.height, self)
   self.body.gameObject = self;
   self.tag = "Player"
   self.weapon = AngerWeapon.new()
   self.rotation = 0;
+  self.isDead = false;
+  self.Update = function(self, dt)
+    if not self.isDead then
+      if self.canFire and love.mouse.isDown(1) then
+        self:Fire()
+      end
+      local move = Vector2.new(0, 0)
+      if love.keyboard.isDown('a') and not love.keyboard.isDown('d') then
+        move.x = -1;
+      elseif love.keyboard.isDown('d') and not love.keyboard.isDown('a') then
+        move.x = 1;
+      end
+
+      self.pos = self.pos + move:Normalized() * dt * 100
+    end
+  end
+  self.Draw = function(self)
+    if not self.isDead then
+      local drawPos = self:GetDrawPos()
+      love.graphics.draw(self.sprite, drawPos.x, drawPos.y, self.rotation)
+    end
+  end
+  self.Fire = function(self)
+    self.weapon:Fire(self)
+    self.canFire = false;
+    self.refreshTimer:Start()
+  end
+  self.HandleCollision = function(self, other)
+    if other.tag == "Bullet" and not self.isDead then
+      self.isDead = true;
+      self.refreshTimer:Stop()
+      self.respawnTimer:Start()
+    end
+  end
+
+  self.Reset = function(self)
+    self.canFire = true
+  end
+
+  self.Respawn = function(self)
+    self.isDead = false
+    self.canFire = true
+  end
   AddGameObject(self)
   return self;
-end
-
-function Player.Reset(self)
-  self.canFire = true
-end
-function Player.Draw(self)
-  local drawPos = self:GetDrawPos()
-  love.graphics.draw(self.sprite, drawPos.x, drawPos.y, self.rotation)
-end
-
-function Player.GetDrawPos(self)
-  local dims = Vector2.new(self.width, self.height):Rotated(self.rotation) / 2
-  return Vector2.new(self.pos.x - dims.x, self.pos.y - dims.y)
-end
-
-function Player.SetForward(self, fwd)
-  self.fwd = fwd;
-  self.rotation = self.fwd:Get_Angle()
-end
-function Player.Update (self, dt)
-  if self.canFire and love.mouse.isDown(1) then
-    self:Fire()
-  end
-  local move = Vector2.new(0, 0)
-  if love.keyboard.isDown('a') and not love.keyboard.isDown('d') then
-    move.x = -1;
-  elseif love.keyboard.isDown('d') and not love.keyboard.isDown('a') then
-    move.x = 1;
-  end
-
-  self.pos = self.pos + move:Normalized() * dt * 100
-end
-
-function Player.Fire(self)
-  self.weapon:Fire(self)
-  self.canFire = false;
-  self.refreshTimer:Start()
-end
-
-function Player.HandleCollision(self, other)
-  if (other.tag == "Bullet") then
-    RemoveGameObject(self)
-  end
 end

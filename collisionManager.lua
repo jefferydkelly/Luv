@@ -60,9 +60,18 @@ function JCollider.newRectangleShape(wid, hite, go)
   return self;
 end
 
+function JCollider.updateDimensions(self)
+  self.points = {};
+  local wid, hite = self.gameObject.width, self.gameObject.height
+  table.insert(self.points, Vector2.new(-wid / 2, -hite / 2))
+  table.insert(self.points, Vector2.new(wid / 2, -hite / 2))
+  table.insert(self.points, Vector2.new(wid / 2, hite / 2))
+  table.insert(self.points, Vector2.new(-wid / 2, hite / 2))
+end
+
 function JCollider.GetWorldPoints(self)
   local worldPoints = {};
-  local pos = self.gameObject.pos + Vector2.new(self.gameObject.width, self.gameObject.height) / 2 or Vector2.new(0, 0)
+  local pos = self.gameObject.pos or Vector2.new(0, 0)
   for i = 1, #self.points do
     table.insert(worldPoints, self.points[i]:Rotated(self.gameObject.rotation) + pos)
   end
@@ -73,9 +82,10 @@ end
 function JCollider.Draw(self, color)
   local verts = JTable.new()
   love.graphics.setColor(color or {255, 255, 255})
-  local pos = self.gameObject.pos or Vector2.new(0, 0)
-  for i = 1, #self.points do
-    local pPos = pos - self.points[i]:Rotated(self.gameObject.rotation)
+  --local pos = self.gameObject.pos or Vector2.new(0, 0)
+  local pts = self:GetWorldPoints()
+  for i = 1, #pts do
+    local pPos = pts[i]
     verts:Add(pPos.x)
     verts:Add(pPos.y)
   end
