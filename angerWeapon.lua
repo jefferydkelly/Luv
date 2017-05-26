@@ -13,6 +13,7 @@ function AngerWeapon.Fire(self, player)
     local ang = -math.pi * (2 * i - 2) / 6
     local bullet = Bullet.new(bullPos)
     bullet:SetForward(Vector2.new(math.cos(ang), math.sin(ang)))
+    bullet.isPlayerAligned = true
   end
 
 end

@@ -1,5 +1,6 @@
 require('jTable')
 require('jTimer')
+require('fileLoader')
 require('collisionManager')
 require('gameObject')
 require('player')
@@ -51,11 +52,18 @@ end
 function love.load()
   gameObjects = JTable.new();
   player = Player.new()
-  local e1 = Enemy.new()
-  e1.pos.x = love.graphics.getWidth() / 5;
-  e1.moveLeft = true;
-  local e2 = Enemy.new()
-  e2.pos.x = love.graphics.getWidth() * 4 / 5;
+  local json = LoadJson('json/test.json')
+  local epr = json["enemiesPerLine"]
+  local sy = json["startY"]
+  for i = 1, json["numberOfLines"] do
+    local moveLeft = true
+    for j = 1, epr do
+      local enemy = Enemy.new()
+      enemy.pos = Vector2.new(love.graphics.getWidth() * j / (epr + 1), sy - 100 * (i - 1))
+      enemy.moveLeft = moveLeft
+      moveLeft = not moveLeft
+    end
+  end
   Obstacle.new(Vector2.new(love.graphics.getWidth(), love.graphics.getHeight()) / 2)
 
 end

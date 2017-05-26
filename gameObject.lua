@@ -6,6 +6,7 @@ GameObject = {
   width, height = 0, 0,
   rotation = 0,
   body = nil,
+  isPlayerAligned = false,
   Die = function(self)
     GetCollisionManager():RemoveBody(self.body)
     RemoveGameObject(self)

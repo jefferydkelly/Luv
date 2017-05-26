@@ -19,16 +19,15 @@ function Bullet.new(pos)
   self.destroyTimer.tar = self;
   self.destroyTimer:Start()
   self.tag = "Bullet"
+  self.Update = function(self, dt)
+    self.pos = self.pos + (self.fwd * self.moveSpeed * dt);
+  end
+
+  self.HandleCollision = function (self, other)
+    if other.tag ~= "Bullet" then
+      self:Die();
+    end
+  end
   AddGameObject(self)
   return self;
-end
-
-function Bullet.Update(self, dt)
-  self.pos = self.pos + (self.fwd * self.moveSpeed * dt);
-end
-
-function Bullet.HandleCollision (self, other)
-  if other.tag ~= "Bullet" then
-    self:Die();
-  end
 end

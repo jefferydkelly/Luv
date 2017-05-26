@@ -10,22 +10,7 @@ Player.__index = GameObject;
 local playerSprite = love.graphics.newImage('Sprites/Player.png')
 function Player.new()
   local self = setmetatable({}, Player)
-  self.pos = Vector2.new(love.graphics.getWidth() / 2, love.graphics.getHeight() - 70)
-  self.sprite = playerSprite
-  self.width, self.height = playerSprite:getDimensions()
-  self.canFire = true;
-  self.refreshTimer = JTimer.new(1)
-  self.refreshTimer.tar = self;
-  self.refreshTimer.del = self.Reset;
-  self.respawnTimer = JTimer.new(2)
-  self.respawnTimer.del = self.Respawn;
-  self.respawnTimer.tar = self
-  self.body = JCollider.newRectangleShape(self.width, self.height, self)
-  self.body.gameObject = self;
-  self.tag = "Player"
-  self.weapon = AngerWeapon.new()
-  self.rotation = 0;
-  self.isDead = false;
+
   self.Update = function(self, dt)
     if not self.isDead then
       if self.canFire and love.mouse.isDown(1) then
@@ -68,6 +53,23 @@ function Player.new()
     self.isDead = false
     self.canFire = true
   end
+
+  self.pos = Vector2.new(love.graphics.getWidth() / 2, love.graphics.getHeight() - 70)
+  self.sprite = playerSprite
+  self.width, self.height = playerSprite:getDimensions()
+  self.canFire = true;
+  self.refreshTimer = JTimer.new(1)
+  self.refreshTimer.tar = self;
+  self.refreshTimer.del = self.Reset;
+  self.respawnTimer = JTimer.new(2)
+  self.respawnTimer.del = self.Respawn;
+  self.respawnTimer.tar = self
+  self.body = JCollider.newRectangleShape(self.width, self.height, self)
+  self.body.gameObject = self;
+  self.tag = "Player"
+  self.weapon = AngerWeapon.new()
+  self.rotation = 0;
+  self.isDead = false;
   AddGameObject(self)
   return self;
 end

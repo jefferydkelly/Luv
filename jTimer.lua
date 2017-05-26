@@ -14,7 +14,9 @@ end
 function JTimer.Update(self, dt)
   self.runTime = self.runTime + dt;
   if self.runTime >= self.time then
-    self.del(self.tar)
+    if self.del ~= nil then
+      self.del(self.tar)
+    end
     self.runTime = 0;
     return true;
   end
