@@ -15,6 +15,10 @@ function Enemy.new()
       self.moveLeft = not self.moveLeft;
       self:HopForward()
     end
+
+    if self.pos.y >= love.graphics.getHeight() then
+      self.pos.y = self.pos.y - love.graphics.getHeight();
+    end
     local moveDir = Vector2.new(-1, 0)
     if self.moveLeft then
       moveDir = Vector2.new(1, 0)
@@ -28,7 +32,7 @@ function Enemy.new()
 
   self.HandleCollision = function(self, other)
     if other.tag == "Bullet" and other.isPlayerAligned then
-      RemoveGameObject(self)
+      self:Die()
     elseif other.tag == "Enemy" then
       self.moveLeft = not self.moveLeft;
       if self.moveLeft then

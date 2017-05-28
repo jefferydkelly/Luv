@@ -31,6 +31,8 @@ function Player.new()
       local drawPos = self:GetDrawPos()
       love.graphics.draw(self.sprite, drawPos.x, drawPos.y, self.rotation)
     end
+    --love.graphics.print(text, x, y, r, sx, sy, ox, oy, kx, ky)
+    love.graphics.print("Lives: " .. self.livesRemaining, 50, 50)
   end
   self.Fire = function(self)
     self.weapon:Fire(self)
@@ -39,9 +41,14 @@ function Player.new()
   end
   self.HandleCollision = function(self, other)
     if other.tag == "Bullet" and not self.isDead then
-      self.isDead = true;
-      self.refreshTimer:Stop()
-      self.respawnTimer:Start()
+      if self.livesRemaining > 0 then
+        self.isDead = true;
+        self.refreshTimer:Stop()
+        self.respawnTimer:Start()
+        self.livesRemaining = self.livesRemaining - 1
+      else
+        GameOver()
+      end
     end
   end
 
@@ -53,7 +60,7 @@ function Player.new()
     self.isDead = false
     self.canFire = true
   end
-
+  self.livesRemaining = 3
   self.pos = Vector2.new(love.graphics.getWidth() / 2, love.graphics.getHeight() - 70)
   self.sprite = playerSprite
   self.width, self.height = playerSprite:getDimensions()
@@ -67,7 +74,7 @@ function Player.new()
   self.body = JCollider.newRectangleShape(self.width, self.height, self)
   self.body.gameObject = self;
   self.tag = "Player"
-  self.weapon = AngerWeapon.new()
+  self.weapon = CryWeapon.new()
   self.rotation = 0;
   self.isDead = false;
   AddGameObject(self)
