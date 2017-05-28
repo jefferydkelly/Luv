@@ -31,8 +31,6 @@ function Player.new()
       local drawPos = self:GetDrawPos()
       love.graphics.draw(self.sprite, drawPos.x, drawPos.y, self.rotation)
     end
-    --love.graphics.print(text, x, y, r, sx, sy, ox, oy, kx, ky)
-    love.graphics.print("Lives: " .. self.livesRemaining, 50, 50)
   end
   self.Fire = function(self)
     self.weapon:Fire(self)

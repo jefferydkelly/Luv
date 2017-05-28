@@ -95,6 +95,8 @@ function Draw(self)
     for i = 1, #gameObjects do
       gameObjects[i]:Draw()
     end
+
+    love.graphics.print("Lives: " .. player.livesRemaining, 50, 50)
   else
     love.graphics.print("Game Over", love.graphics.getWidth() / 2, love.graphics.getHeight() / 2)
   end
