@@ -45,7 +45,7 @@ function Player.new()
         self.respawnTimer:Start()
         self.livesRemaining = self.livesRemaining - 1
       else
-        GameOver()
+        GameOver(false)
       end
     end
   end
