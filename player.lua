@@ -3,8 +3,8 @@ require('jTable')
 require('jTimer')
 require('bullet')
 require('collisionManager')
-require('CryWeapon')
-require('AngerWeapon')
+require('cryWeapon')
+require('angerWeapon')
 Player = {}
 Player.__index = GameObject;
 local playerSprite = love.graphics.newImage('Sprites/Player.png')

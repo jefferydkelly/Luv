@@ -5,7 +5,7 @@ require('collisionManager')
 require('gameObject')
 require('player')
 require('enemy')
-require('Obstacle')
+require('obstacle')
 
 
 
